@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: [ "main" ]
+
+permissions: write-all
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install tools
+        run: sudo apt update && sudo apt install -y build-essential unzip
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          path: busybox-1.37.0-ohos-arm64.tar.gz
+
+      - name: Upload release asset
+        if: github.event_name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.ref_name }} busybox-1.37.0-ohos-arm64.tar.gz --clobber --repo ${{ github.repository }}

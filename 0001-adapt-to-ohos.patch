@@ -1,0 +1,26 @@
+diff -r -u a/include/platform.h b/include/platform.h
+--- a/include/platform.h	2023-01-05 23:29:10.000000000 +0800
++++ b/include/platform.h	2025-11-20 11:24:57.673803954 +0800
+@@ -553,6 +553,10 @@
+ # undef HAVE_PRINTF_PERCENTM
+ #endif
+ 
++#if defined(__OHOS__)
++# undef HAVE_STRVERSCMP
++#endif
++
+ /*
+  * Now, define prototypes for all the functions defined in platform.c
+  * These must come after all the HAVE_* macros are defined (or not)
+diff -r -u a/networking/ether-wake.c b/networking/ether-wake.c
+--- a/networking/ether-wake.c	2024-04-16 15:23:50.000000000 +0800
++++ b/networking/ether-wake.c	2025-11-20 11:25:28.610357831 +0800
+@@ -130,7 +130,7 @@
+ 	eap = ether_aton_r(hostid, eaddr);
+ 	if (eap) {
+ 		bb_debug_msg("The target station address is %s\n\n", ether_ntoa(eap));
+-#if !defined(__UCLIBC__) || UCLIBC_VERSION >= KERNEL_VERSION(0, 9, 30)
++#if (!defined(__UCLIBC__) || UCLIBC_VERSION >= KERNEL_VERSION(0, 9, 30)) && !defined(__OHOS__)
+ 	} else if (ether_hostton(hostid, eaddr) == 0) {
+ 		bb_debug_msg("Station address for hostname %s is %s\n\n", hostid, ether_ntoa(eaddr));
+ #endif
